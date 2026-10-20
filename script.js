@@ -3,9 +3,13 @@ const CONFIG = {
   nama1: "Michael",
   nama2: "chelsea",
   tanggalJadian: [2026, 5, 10],   // [tahun, bulan, tanggal]
-  // Isi path foto untuk mengganti ilustrasi, contoh: "images/foto1.jpg"
-  // Biarkan null untuk tetap memakai ilustrasi bawaan.
-  foto: ["foto1.jpg", "foto2.jpg", "foto3.jpg"]
+  // Isi dengan URL foto (link gambar langsung, berakhiran .jpg/.png/.webp).
+  // Biarkan "" atau null untuk tetap memakai ilustrasi bawaan.
+  foto: [
+    "https://files.catbox.moe/v08p2g.webp",
+    "https://files.catbox.moe/sz3gaw.jpeg",
+    "https://files.catbox.moe/xor7mw.jpeg"
+  ]
 };
 /* ======================================= */
 
@@ -15,9 +19,16 @@ const CONFIG = {
   document.getElementById('names').innerHTML=CONFIG.nama1+' <span class="amp">&amp;</span> '+CONFIG.nama2;
   // ganti ilustrasi dengan foto jika diisi
   document.querySelectorAll('.card').forEach(function(c,i){
-    if(!CONFIG.foto[i])return;
-    var img=new Image();img.src=CONFIG.foto[i];img.alt='Foto kenangan '+(i+1);
-    c.replaceChild(img,c.querySelector('svg'));
+    var src=CONFIG.foto[i];
+    if(!src)return;
+    var svg=c.querySelector('svg');
+    var img=new Image();
+    img.alt='Foto kenangan '+(i+1);
+    img.referrerPolicy='no-referrer';
+    img.style.cssText='display:block;width:100%;aspect-ratio:4/5;object-fit:cover';
+    img.onload=function(){if(svg&&svg.parentNode===c)c.replaceChild(img,svg)};
+    img.onerror=function(){console.warn('Foto tidak bisa dimuat dari URL: '+src)};
+    img.src=src;
   });
   // split headings into words
   document.querySelectorAll('[data-split]').forEach(function(h){
